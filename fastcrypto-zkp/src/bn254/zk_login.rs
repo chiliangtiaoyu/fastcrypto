@@ -121,6 +121,9 @@ pub enum OIDCProvider {
     FanTV,
     /// https://api.arden.cc/auth/jwks
     Arden,
+
+    Xone,
+
 }
 
 impl FromStr for OIDCProvider {
@@ -143,6 +146,7 @@ impl FromStr for OIDCProvider {
             "Onefc" => Ok(Self::Onefc),
             "FanTV" => Ok(Self::FanTV),
             "Arden" => Ok(Self::Arden),
+            "Xone" => Ok(Self::Xone),
             _ => {
                 let re = Regex::new(
                     r"AwsTenant-region:(?P<region>[^.]+)-tenant_id:(?P<tenant_id>[^/]+)",
@@ -178,6 +182,7 @@ impl ToString for OIDCProvider {
             Self::Onefc => "Onefc".to_string(),
             Self::FanTV => "FanTV".to_string(),
             Self::Arden => "Arden".to_string(),
+            Self::Xone => "Xone".to_string(),
             Self::AwsTenant((region, tenant_id)) => {
                 format!("AwsTenant-region:{}-tenant_id:{}", region, tenant_id)
             }
@@ -255,6 +260,10 @@ impl OIDCProvider {
                 "https://oidc.arden.cc",
                 "https://api.arden.cc/auth/jwks",
             ),
+            OIDCProvider::Xone => ProviderConfig::new(
+                "https://accounts.xone.com",
+                "https://salt-api-testnet.huione.org/get_keys",
+            ),
         }
     }
 
@@ -277,6 +286,7 @@ impl OIDCProvider {
             }
             "https://accounts.fantv.world" => Ok(Self::FanTV),
             "https://oidc.arden.cc" => Ok(Self::Arden),
+            "https://accounts.xone.com" => Ok(Self::Xone),
             iss if match_micrsoft_iss_substring(iss) => Ok(Self::Microsoft),
             _ => match parse_aws_iss_substring(iss) {
                 Ok((region, tenant_id)) => {
